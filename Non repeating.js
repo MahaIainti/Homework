@@ -7,4 +7,3 @@ var result = arr.filter(function(v) {
    	return !letters[v] || letters[v] == 1;
 });
 console.log(result[0]);
-

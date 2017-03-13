@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<div id="all">
+			<input id="add_todo" type="text" name="" >
+			<ul id="todol"></ul>
+			<div id="futer">1</div>
+		</div>
+		<script type="text/javascript">
+			var input = document.querySelector("#add_todo");
+			var todol = document.querySelector("#todol");
+			var all = document.querySelector("#all");
+			window.onload=function(){
+				all.style.width='200px';
+				all.style.background='gray';
+				all.style.margin= '0px auto';
+				document.body.appendChild(all);
+			}
+			function function_name(event) {
+				if (event.key === "Enter" && input.value != ""){
+				var newLi = document.createElement("li");
+				var checkB = document.createElement("input");
+				var text = document.createElement("span");
+				var closeB = document.createElement("button");
+				checkB.type = "checkbox";
+				text.textContent = input.value;
+            	closeB.className = "close";
+				todol.appendChild(newLi);
+				newLi.appendChild(checkB);
+				newLi.appendChild(text);
+            	newLi.appendChild(closeB);
+
+				input.value = "";
+				
+				}
+
+			}
+				input.addEventListener("keypress",function_name)
+				/*checkB.addEventListener("onclick", function (){
+					newLi.classList.toggle(text-decoration:line-through);
+					//text.style.color = "grey"; 
+				});*/
+				document.getElementById('dva').onclick = function() {
+    alert('клик');
+}
+
+		</script>
+
+	</body>
+</html>
