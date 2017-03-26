@@ -80,17 +80,19 @@
 				}
 			}
 
-			newB1.onclick = function() {
-				/*var lol = ul.length
-				console.log(lol)*/
-			}
-			newB2.addEventListener("click", function(){
-				var lol = ul.length
-				console.log(lol)
-			})
-			newB3.onclick = function() {	
-			}
-			input.addEventListener("keypress",function_name)
+			newB1.onclick = function() {};
+			newB2.addEventListener("click", function(){});
+			newB3.onclick = function() {};
+			input.addEventListener("keypress",function_name);
+			fetch('http://localhost:3001/todos')
+			.then(res => res.json())
+			.then(json => {
+				console.log(json);
+				/*for (let i = 0; i < json.length; i++) {
+					let todo = json[i];
+					createTodo(todo.text,todo.change);
+				}*/
+			});
 		</script>
 	</body>
 </html>
