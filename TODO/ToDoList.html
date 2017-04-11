@@ -23,6 +23,8 @@
 			var newB1 = document.createElement("button");
 			var newB2 = document.createElement("button");
 			var newB3 = document.createElement("button");
+			var newLi = document.createElement("li");
+			var closeB = document.createElement("button");
 			window.onload = function(){
 				all.style.width = "383px";
 				all.style.margin = "0px auto";
@@ -31,15 +33,12 @@
 				todol.style.margin = "0px 0px";
 				newB1.textContent = "All";
 				newB1.style.width = "85px";
-				newB1.style.height = "20px";
 				newB1.style.margin = "5px 20px";
 				newB2.textContent = "Active";
 				newB2.style.width = "85px";
-				newB2.style.height = "20px";
 				newB2.style.margin = "5px 20px";
 				newB3.textContent = "Completed";
 				newB3.style.width = "85px";
-				newB3.style.height = "20px";
 				newB3.style.margin = "5px 20px";
 				document.body.appendChild(all);
 				futer.appendChild(newB1);
@@ -47,51 +46,106 @@
 				futer.appendChild(newB3);
 				futer.style.border = "1px solid #ccc";
 			}
+			function createTodo(newid, todoText, change) {
+                let newLi = document.createElement('li');
+                newLi.setAttribute('data-id', newid);
+                newLi.style.position = "relative";
+	            newLi.style.border = " 1px solid #ccc";
+	           	newLi.className = "lis";
+                let checkB = document.createElement('input');
+                checkB.type='checkbox';
+                newLi.appendChild(checkB);
+                checkB.addEventListener('click', function() {
+                    newLi.classList.toggle('change');
+                });
+                let text = document.createElement('span');
+                text.textContent = todoText;
+                newLi.appendChild(text);
+                todol.appendChild(newLi);
+                if(change) {
+                    checkbox.checked = true;
+                    newTodo.classList.add('change');
+                }
+                input.value='';
+                let closeB = document.createElement("button");
+                closeB.className = "close";
+				closeB.textContent = "x";
+				closeB.style.display = "block";
+				closeB.style.position = "absolute";
+				closeB.style.top = "0px";
+				closeB.style.right = "0px";
+            	newLi.appendChild(closeB);
+				closeB.addEventListener("click", function(){
+       				newLi.classList.toggle(
+       				newLi.style.display = "none");
+       				newLi.className = "lose";
+				});
+                newB1.addEventListener("click", function() {
+					if (newLi.classList.contains("lose") ){
+  						newLi.classList.toggle(newLi.style.display = "none");
+  					}
+					else {newLi.classList.toggle(newLi.style.display = "block");
+					}
+				});
+                newB2.addEventListener("click", function() {
+  					if (newLi.classList.contains("change") ){
+  						newLi.classList.toggle(newLi.style.display = "none");
+  					}
+  					else if (newLi.classList.contains("lose") ){
+  						newLi.classList.toggle(newLi.style.display = "none");
+  					}
+					else {newLi.classList.toggle(newLi.style.display = "block");
+					}
+				});
+				newB3.addEventListener("click", function() {
+  					if (newLi.classList.contains("change") ){
+  						newLi.classList.toggle(newLi.style.display = "block");
+  					}
+  					else if (newLi.classList.contains("lose") ){
+  						newLi.classList.toggle(newLi.style.display = "none");
+  					}
+					else {newLi.classList.toggle(newLi.style.display = "none");
+					}
+				});
+            }
 			function function_name(event) {
 				if (event.key === "Enter" && input.value != ""){
-					var newLi = document.createElement("li");
-					var checkB = document.createElement("input");
-					var text = document.createElement("span");
-					var closeB = document.createElement("button");
-					newLi.style.position = "relative";
-					checkB.type = "checkbox";
-					text.textContent = input.value;
-       	    	 	closeB.className = "close";
-					closeB.textContent = "X";
-					closeB.style.display = "block";
-					closeB.style.position = "absolute";
-					closeB.style.top = "0px";
-					closeB.style.right = "0px";
-					todol.appendChild(newLi);
-					newLi.appendChild(checkB);
-					newLi.appendChild(text);
-	            	newLi.appendChild(closeB);
-	            	newLi.style.border = " 1px solid #ccc";
-					input.value = "";
-					checkB.addEventListener("click", function(){
-    					text.classList.toggle("change")
-    				}
-    				);
-					closeB.addEventListener("click", function(){
-        				newLi.classList.toggle(
-          				newLi.style.display = "none")
-					}
-					);
-				}
+					let text = input.value;
+                    fetch("http://localhost:3001/todo", {
+                        method: "POST",
+                        body: JSON.stringify({text: text}),
+                        headers: {"Content-Type": "application/json"}
+                    })
+                        .then(res => res.json())
+                        .then(json => {
+                            let id = json.id;
+                            createTodo(id, text, false);
+                        });
+                }
 			}
-
-			newB1.onclick = function() {};
-			newB2.addEventListener("click", function(){});
-			newB3.onclick = function() {};
 			input.addEventListener("keypress",function_name);
+			function del(events) {
+				let newid = newLi.id;
+                    fetch("http://localhost:3001/todos-delete", {
+                        method: "POST",
+                        body: JSON.stringify({'ids': [newid]}),
+                        headers: {"Content-Type": "application/json"}
+                    })
+                        .then(res => res.json())
+                        .then(json => {
+                            let id = json.id;
+                            createTodo(todo.id,todo.text,false);
+                        })
+			}
+			input.addEventListener("keypress",del);
 			fetch('http://localhost:3001/todos')
 			.then(res => res.json())
 			.then(json => {
 				console.log(json);
-				/*for (let i = 0; i < json.length; i++) {
+				for (let i = 0; i < json.length; i++) {
 					let todo = json[i];
-					createTodo(todo.text,todo.change);
-				}*/
+					createTodo(todo.id,todo.text,todo.change);
+				}
 			});
 		</script>
 	</body>
