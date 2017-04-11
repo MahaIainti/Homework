@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script src="https://unpkg.com/react@15/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+	<div id="react"></div>
+	<script type="text/babel">
+		class CreatePost extends React.Component {
+            render() {
+        		return (
+        			<div>
+						<ul>
+							{this.state.todos.map(todo =>
+	                            <TodoItem 
+	                            	key={todo.id}
+	                                id={todo.id}
+	                                done={todo.done}
+	                                text={todo.text}
+	                                onDeleteItem={this.removeFromTodos}
+	                                />
+	                        )}
+						</ul>
+						<label>
+                            <input ref="set" type="text"
+            					onKeyUp={this.newLi}
+            				/>
+                        </label>
+					</div>
+				);
+			}
+			constructor() {
+				super();
+                this.state = {
+                    todos: []
+                };
+            }
+            componentDidMount() {
+                fetch('http://localhost:3001/todos')
+                    .then(res => res.json())
+                    .then(json => this.setState({todos: json}))
+            }
+			removeFromTodos = (id) => {
+                let todos = this.state.todos;
+                let newTodos = todos.filter(todo => todo.id != id);
+                this.setState({todos: newTodos});
+            }
+            setLi(id, text, done) {
+        		let newTodos = this.state.todos;
+        		newTodos[newTodos.length] = {id, id, text, done};
+        		this.setState({todos: newTodos});
+        	}
+            newLi = (event) => {
+					let textValue = this.refs.set.value;
+					if (event.key == "Enter" && textValue != "") {
+          	fetch('http://localhost:3001/todo', {
+            	method: 'POST',
+							headers: {"content-type": "application/json"},
+              body: JSON.stringify({'text': textValue})
+          	})
+          		.then(res => res.json())
+                .then(json => {
+              	let idSet = json.id;
+                this.setLi(idSet, textValue, false);
+              })
+							.then(()=> {
+              	this.refs.set.value = "";
+              });
+					}
+				}
+		}
+
+		class TodoItem extends React.Component{
+            render() {
+            	let classes = this.props.done ? "done" : "";
+                return (
+                	<li>
+						<label>
+							<input type="checkbox" name=""/>
+							<span>{this.props.text}</span>
+							<button onClick={() =>
+                            this.doneList(this.props.id)}>x</button>
+						</label>
+					</li>
+				);
+            }
+            doneList(id) {
+                fetch('http://localhost:3001/todos-delete', {
+                    method: 'POST',
+                    headers: {"content-type": "application/json"},
+                    body: JSON.stringify({ids: [id]})
+                })
+                    .then(res => {
+                        if(res.status == 200) {
+                            this.props.onDeleteItem(id);
+                        }
+                    })
+            }
+        }
+		ReactDOM.render(<CreatePost/>, document.querySelector('#react'));
+	</script>
+</body>
+</html>

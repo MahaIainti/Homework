@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<style type="text/css">
+			.change{
+				text-decoration:line-through;
+				color: grey;  
+			}
+		</style>
+	</head>
+	<body>
+		<div id="all">
+			<input id="add_todo" type="text" name="" size="50" placeholder="What needs to be done?">
+			<ul id="todol" style="list-style: none"></ul>
+			<div id="futer"></div>
+		</div>
+		<script type="text/javascript">
+			var input = document.querySelector("#add_todo");
+			var todol = document.querySelector("#todol");
+			var all = document.querySelector("#all");
+			var futer = document.querySelector("#futer");
+			var newB1 = document.createElement("button");
+			var newB2 = document.createElement("button");
+			var newB3 = document.createElement("button");
+			window.onload = function(){
+				all.style.width = "383px";
+				all.style.margin = "0px auto";
+				todol.style.list = "none";
+				todol.style.padding = "0px 0px";
+				todol.style.margin = "0px 0px";
+				newB1.textContent = "All";
+				newB1.style.width = "85px";
+				newB1.style.height = "20px";
+				newB1.style.margin = "5px 20px";
+				newB2.textContent = "Active";
+				newB2.style.width = "85px";
+				newB2.style.height = "20px";
+				newB2.style.margin = "5px 20px";
+				newB3.textContent = "Completed";
+				newB3.style.width = "85px";
+				newB3.style.height = "20px";
+				newB3.style.margin = "5px 20px";
+				document.body.appendChild(all);
+				futer.appendChild(newB1);
+				futer.appendChild(newB2);
+				futer.appendChild(newB3);
+				futer.style.border = "1px solid #ccc";
+			}
+			function function_name(event) {
+				if (event.key === "Enter" && input.value != ""){
+					var newLi = document.createElement("li");
+					var checkB = document.createElement("input");
+					var text = document.createElement("span");
+					var closeB = document.createElement("button");
+					newLi.style.position = "relative";
+					checkB.type = "checkbox";
+					text.textContent = input.value;
+       	    	 	closeB.className = "close";
+					closeB.textContent = "X";
+					closeB.style.display = "block";
+					closeB.style.position = "absolute";
+					closeB.style.top = "0px";
+					closeB.style.right = "0px";
+					todol.appendChild(newLi);
+					newLi.appendChild(checkB);
+					newLi.appendChild(text);
+	            	newLi.appendChild(closeB);
+	            	newLi.style.border = " 1px solid #ccc";
+					input.value = "";
+					checkB.addEventListener("click", function(){
+    					text.classList.toggle("change")
+    				}
+    				);
+					closeB.addEventListener("click", function(){
+        				newLi.classList.toggle(
+          				newLi.style.display = "none")
+					}
+					);
+				}
+			}
+
+			newB1.onclick = function() {};
+			newB2.addEventListener("click", function(){});
+			newB3.onclick = function() {};
+			input.addEventListener("keypress",function_name);
+			fetch('http://localhost:3001/todos')
+			.then(res => res.json())
+			.then(json => {
+				console.log(json);
+				/*for (let i = 0; i < json.length; i++) {
+					let todo = json[i];
+					createTodo(todo.text,todo.change);
+				}*/
+			});
+		</script>
+	</body>
+</html>
